@@ -30,7 +30,7 @@ namespace LegacyApp
                 command.Parameters.Add(hasCreditLimitParameter);
                 var creditLimitParameter = new SqlParameter("@CreditLimit", SqlDbType.Int) { Value = user.CreditLimit };
                 command.Parameters.Add(creditLimitParameter);
-                var clientldParameter = new SqlParameter("@Chentld", SqlDbType.Int) { Value = user.Client.Id };
+                var clientldParameter = new SqlParameter("@ClientId", SqlDbType.Int) { Value = user.Client.Id };
                 command.Parameters.Add(clientldParameter);
 
                 connection.Open();

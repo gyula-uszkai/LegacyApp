@@ -23,7 +23,7 @@ namespace LegacyApp
             }
 
             var clientRepository = new ClientRepository();
-            var client = clientRepository.GetByld(clientld);
+            var client = clientRepository.GetById(clientld);
 
             var user = new User
             {
