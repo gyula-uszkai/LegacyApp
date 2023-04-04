@@ -31,7 +31,7 @@ namespace LegacyApp
                 return false;
             }
 
-            var client = this.clientRepository.GetById(clientld);
+            var client = this.clientRepository.Get(clientld);
 
             var user = new User
             {
