@@ -6,44 +6,35 @@ namespace LegacyApp
     {
         private readonly IClientRepository clientRepository;
         private readonly IUserRepository userRepository;
+        private readonly IUserValidator userValidator;
 
-        public UserService() : this(new ClientRepository(), new UserRepository())
+        public UserService() : this(new ClientRepository(), new UserRepository(), new UserValidator())
         { }
 
-        public UserService(IClientRepository clientRepository, IUserRepository userRepository)
+        public UserService(IClientRepository clientRepository, IUserRepository userRepository, IUserValidator userValidator)
         {
             this.clientRepository = clientRepository;
             this.userRepository = userRepository;
+            this.userValidator = userValidator;
         }
 
         public bool AddUser(string firname, string surname, string email, DateTime dateOfBirth, int clientld)
         {
-            if (string.IsNullOrEmpty(firname) || string.IsNullOrEmpty(surname))
-            {
-                return false;
-            }
-            if (!email.Contains("@") && !email.Contains("."))
-            {
-                return false;
-            }
-            var now = DateTime.Now;
-            int age = now.Year - dateOfBirth.Year;
-            if (now.Month < dateOfBirth.Month || (now.Month == dateOfBirth.Month && now.Day < dateOfBirth.Day)) age--;
-            if (age < 21)
-            {
-                return false;
-            }
-
-            var client = this.clientRepository.Get(clientld);
-
             var user = new User
             {
-                Client = client,
                 DateOfBirth = dateOfBirth,
                 EmailAddress = email,
                 Firstname = firname,
                 Surname = surname
             };
+
+            if (!userValidator.ValidateUser(user))
+            {
+                return false;
+            }
+
+            var client = this.clientRepository.Get(clientld);
+            user.Client = client;
 
             if (client.Name == "VeryImportantClient")
             {
