@@ -1,6 +1,6 @@
 ﻿namespace LegacyApp
 {
-    public class Client
+    public class Client : IClient
     {
         public int Id { get; set; }
         public string Name { get; set; }

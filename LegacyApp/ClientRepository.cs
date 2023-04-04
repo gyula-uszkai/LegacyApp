@@ -6,9 +6,9 @@ namespace LegacyApp
 {
     public class ClientRepository : IClientRepository
     {
-        public Client Get(int id)
+        public IClient Get(int id)
         {
-            Client client = null;
+            IClient client = null;
             var connectionString = ConfigurationManager.ConnectionStrings["appDatabase"].ConnectionString;
             using (var connection = new SqlConnection(connectionString))
             {

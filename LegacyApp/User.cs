@@ -9,6 +9,6 @@
         public string EmailAddress { get; set; }
         public bool HasCreditLimit { get; set; }
         public int CreditLimit { get; set; }
-        public Client Client { get; set; }
+        public IClient Client { get; set; }
     }
 }

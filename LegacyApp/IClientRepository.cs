@@ -2,6 +2,6 @@
 {
     public interface IClientRepository
     {
-        Client Get(int id);
+        IClient Get(int id);
     }
 }
