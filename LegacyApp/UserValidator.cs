@@ -29,18 +29,24 @@ namespace LegacyApp
             }
 
             var now = this.dateTimeService.Now;
-            int age = now.Year - user.DateOfBirth.Year;
-            if (now.Month < user.DateOfBirth.Month || (now.Month == user.DateOfBirth.Month && now.Day < user.DateOfBirth.Day))
-            {
-                age--;
-            }
 
-            if (age < AgeLimit)
+            if (CalculateAge(user.DateOfBirth, now) < AgeLimit)
             {
                 return false;
             }
 
             return true;
+        }
+
+        private static int CalculateAge(DateTime dateOfBirth, DateTime now)
+        {
+            int age = now.Year - dateOfBirth.Year;
+            if (now.Month < dateOfBirth.Month || (now.Month == dateOfBirth.Month && now.Day < dateOfBirth.Day))
+            {
+                age--;
+            }
+
+            return age;
         }
     }
 }
