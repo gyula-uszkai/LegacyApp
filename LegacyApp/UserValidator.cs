@@ -5,6 +5,13 @@ namespace LegacyApp
     public class UserValidator : IUserValidator
     {
         private const int AgeLimit = 21;
+        private readonly IDateTimeService dateTimeService;
+
+        public UserValidator(IDateTimeService dateTimeService)
+        {
+            this.dateTimeService = dateTimeService;
+        }
+
 
         public bool ValidateUser(User user)
         {
@@ -21,7 +28,7 @@ namespace LegacyApp
                 return false;
             }
 
-            var now = DateTime.Now;
+            var now = this.dateTimeService.Now;
             int age = now.Year - user.DateOfBirth.Year;
             if (now.Month < user.DateOfBirth.Month || (now.Month == user.DateOfBirth.Month && now.Day < user.DateOfBirth.Day))
             {

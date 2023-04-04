@@ -8,7 +8,7 @@ namespace LegacyApp
         private readonly IUserRepository userRepository;
         private readonly IUserValidator userValidator;
 
-        public UserService() : this(new ClientRepository(), new UserRepository(), new UserValidator())
+        public UserService() : this(new ClientRepository(), new UserRepository(), new UserValidator(new DateTimeService()))
         { }
 
         public UserService(IClientRepository clientRepository, IUserRepository userRepository, IUserValidator userValidator)

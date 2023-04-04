@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using Moq;
+using Xunit;
 
 namespace LegacyApp.Tests
 {
@@ -8,7 +9,14 @@ namespace LegacyApp.Tests
 
         public UserValidatorTests()
         {
-            _userValidator = new UserValidator();
+            // Create a mock of the IDateTimeService interface using Moq
+            Mock<IDateTimeService> dateTimeServiceMock = new Mock<IDateTimeService>();
+
+            // Set the mock to return a fixed DateTime value for testing purposes
+            dateTimeServiceMock.Setup(m => m.Now).Returns(new DateTime(2023, 4, 4));
+
+            // Instantiate the UserValidator class with the mock object
+            _userValidator = new UserValidator(dateTimeServiceMock.Object);
         }
 
         [Fact]
@@ -71,7 +79,7 @@ namespace LegacyApp.Tests
                 Firstname = "John",
                 Surname = "Doe",
                 EmailAddress = "johndoe@example.com",
-                DateOfBirth = DateTime.Now.AddYears(-20)
+                DateOfBirth = new DateTime(2003, 4, 4)
             };
 
             // Act
@@ -90,7 +98,7 @@ namespace LegacyApp.Tests
                 Firstname = "John",
                 Surname = "Doe",
                 EmailAddress = "johndoe@example.com",
-                DateOfBirth = DateTime.Now.AddYears(-30)
+                DateOfBirth = new DateTime(1990, 1, 1)
             };
 
             // Act
