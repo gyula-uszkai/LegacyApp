@@ -9,7 +9,7 @@ namespace LegacyApp.Tests
         private readonly Mock<IUserRepository> mockUserRepository;
         private readonly Mock<IUserValidator> mockUserValidator;
         private readonly Mock<ICreditLimitProvider> mockCreditLimitProvider;
-        private readonly UserService userService;
+        private UserService userService;
 
         public UserServiceTests()
         {
@@ -17,12 +17,6 @@ namespace LegacyApp.Tests
             mockUserRepository = new Mock<IUserRepository>();
             mockUserValidator = new Mock<IUserValidator>();
             mockCreditLimitProvider = new Mock<ICreditLimitProvider>();
-            userService = new UserService(
-                mockClientRepository.Object,
-                mockUserRepository.Object,
-                mockUserValidator.Object,
-                mockCreditLimitProvider.Object
-            );
         }
 
         [Fact]
@@ -30,7 +24,13 @@ namespace LegacyApp.Tests
         {
             // Arrange
             var user = new User();
-            mockUserValidator.Setup(x => x.ValidateUser(user)).Returns(false);
+            mockUserValidator.Setup(x => x.ValidateUser(It.IsAny<User>())).Returns(false);
+            userService = new UserService(
+                mockClientRepository.Object,
+                mockUserRepository.Object,
+                mockUserValidator.Object,
+                mockCreditLimitProvider.Object
+            );
 
             // Act
             var result = userService.AddUser("test", "test", "test@example.com", DateTime.UtcNow, 1);
@@ -44,8 +44,14 @@ namespace LegacyApp.Tests
         {
             // Arrange
             var user = new User();
-            mockUserValidator.Setup(x => x.ValidateUser(user)).Returns(true);
+            mockUserValidator.Setup(x => x.ValidateUser(It.IsAny<User>())).Returns(true);
             mockClientRepository.Setup(x => x.Get(1)).Returns((Client)null);
+            userService = new UserService(
+                mockClientRepository.Object,
+                mockUserRepository.Object,
+                mockUserValidator.Object,
+                mockCreditLimitProvider.Object
+            );
 
             // Act
             var result = userService.AddUser("test", "test", "test@example.com", DateTime.UtcNow, 1);
@@ -59,17 +65,22 @@ namespace LegacyApp.Tests
         public void AddUser_ShouldReturnFalse_WhenCreditLimitValidationFails()
         {
             // Arrange
-            var user = new User();
-            mockUserValidator.Setup(x => x.ValidateUser(user)).Returns(true);
+            mockUserValidator.Setup(x => x.ValidateUser(It.IsAny<User>())).Returns(true);
             mockClientRepository.Setup(x => x.Get(1)).Returns(new Client());
-            mockCreditLimitProvider.Setup(x => x.ValidateCreditLimit(user)).Returns(false);
+            mockCreditLimitProvider.Setup(x => x.ValidateCreditLimit(It.IsAny<User>())).Returns(false);
+            userService = new UserService(
+                mockClientRepository.Object,
+                mockUserRepository.Object,
+                mockUserValidator.Object,
+                mockCreditLimitProvider.Object
+            );
 
             // Act
             var result = userService.AddUser("test", "test", "test@example.com", DateTime.UtcNow, 1);
 
             // Assert
             Assert.False(result);
-            mockCreditLimitProvider.Verify(x => x.ValidateCreditLimit(user), Times.Once);
+            mockCreditLimitProvider.Verify(x => x.ValidateCreditLimit(It.IsAny<User>()), Times.Once);
         }
 
         [Fact]
@@ -77,16 +88,22 @@ namespace LegacyApp.Tests
         {
             // Arrange
             var user = new User();
-            mockUserValidator.Setup(x => x.ValidateUser(user)).Returns(true);
+            mockUserValidator.Setup(x => x.ValidateUser(It.IsAny<User>())).Returns(true);
             mockClientRepository.Setup(x => x.Get(1)).Returns(new Client());
-            mockCreditLimitProvider.Setup(x => x.ValidateCreditLimit(user)).Returns(true);
+            mockCreditLimitProvider.Setup(x => x.ValidateCreditLimit(It.IsAny<User>())).Returns(true);
+            userService = new UserService(
+                mockClientRepository.Object,
+                mockUserRepository.Object,
+                mockUserValidator.Object,
+                mockCreditLimitProvider.Object
+            );
 
             // Act
             var result = userService.AddUser("test", "test", "test@example.com", DateTime.UtcNow, 1);
 
             // Assert
             Assert.True(result);
-            mockUserRepository.Verify(x => x.AddUser(user), Times.Once);
+            mockUserRepository.Verify(x => x.AddUser(It.IsAny<User>()), Times.Once);
         }
     }
 

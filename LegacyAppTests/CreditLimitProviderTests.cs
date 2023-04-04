@@ -5,13 +5,19 @@ namespace LegacyApp.Tests
 {
     public class CreditLimitProviderTests
     {
-        private Mock<IClientCreditServiceFactory> _clientCreditServiceFactoryMock;
-        private CreditLimitProvider sut;
+        private readonly Mock<IClientCreditServiceFactory> _clientCreditServiceFactoryMock;
+        private readonly CreditLimitProvider _sut;
 
         public CreditLimitProviderTests()
         {
             _clientCreditServiceFactoryMock = new Mock<IClientCreditServiceFactory>();
-            sut = new CreditLimitProvider(_clientCreditServiceFactoryMock.Object);
+            _clientCreditServiceFactoryMock.Setup(x => x.GetClientCreditServices())
+                                           .Returns(new Dictionary<string, IClientCreditService>
+                                           {
+                                           { "SupportedClient", new Mock<IClientCreditService>().Object }
+                                           });
+
+            _sut = new CreditLimitProvider(_clientCreditServiceFactoryMock.Object);
         }
 
         [Fact]
@@ -21,7 +27,7 @@ namespace LegacyApp.Tests
             User user = null;
 
             // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => sut.ApplyCreditLimit(user));
+            Assert.Throws<ArgumentNullException>(() => _sut.ApplyCreditLimit(user));
         }
 
         [Fact]
@@ -31,7 +37,7 @@ namespace LegacyApp.Tests
             var user = new User { Client = null };
 
             // Act & Assert
-            Assert.Throws<ArgumentException>(() => sut.ApplyCreditLimit(user));
+            Assert.Throws<ArgumentException>(() => _sut.ApplyCreditLimit(user));
         }
 
         [Fact]
@@ -39,15 +45,9 @@ namespace LegacyApp.Tests
         {
             // Arrange
             var user = new User { Client = new Client { Name = "UnknownClient" } };
-            var clientCreditServiceMock = new Mock<IClientCreditService>();
-            _clientCreditServiceFactoryMock.Setup(x => x.GetClientCreditServices())
-                                           .Returns(new Dictionary<string, IClientCreditService>
-                                           {
-                                           { "SupportedClient", clientCreditServiceMock.Object }
-                                           });
 
             // Act & Assert
-            Assert.Throws<Exception>(() => sut.ApplyCreditLimit(user));
+            Assert.Throws<Exception>(() => _sut.ApplyCreditLimit(user));
         }
 
         [Fact]
@@ -66,6 +66,9 @@ namespace LegacyApp.Tests
                                            { "SupportedClient", clientCreditServiceMock.Object }
                                            });
 
+
+            var sut = new CreditLimitProvider(_clientCreditServiceFactoryMock.Object);
+
             // Act
             sut.ApplyCreditLimit(user);
 
@@ -81,7 +84,7 @@ namespace LegacyApp.Tests
             var user = new User { HasCreditLimit = true, CreditLimit = 100 };
 
             // Act
-            var result = sut.ValidateCreditLimit(user);
+            var result = _sut.ValidateCreditLimit(user);
 
             // Assert
             Assert.False(result);
@@ -94,7 +97,7 @@ namespace LegacyApp.Tests
             var user = new User { HasCreditLimit = true, CreditLimit = 600 };
 
             // Act
-            var result = sut.ValidateCreditLimit(user);
+            var result = _sut.ValidateCreditLimit(user);
 
             // Assert
             Assert.True(result);
@@ -107,10 +110,11 @@ namespace LegacyApp.Tests
             var user = new User { HasCreditLimit = false };
 
             // Act
-            var result = sut.ValidateCreditLimit(user);
+            var result = _sut.ValidateCreditLimit(user);
 
             // Assert
             Assert.True(result);
         }
     }
+
 }
