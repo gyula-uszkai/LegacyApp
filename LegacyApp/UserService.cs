@@ -35,10 +35,9 @@ namespace LegacyApp
                 return false;
             }
 
-            var client = this.clientRepository.Get(clientld);
-            user.Client = client;
+            user.Client = this.clientRepository.Get(clientld);
 
-            creditLimitProvider.ApplyCreditLimit(user, client);
+            creditLimitProvider.ApplyCreditLimit(user);
 
             if (!creditLimitProvider.ValidateCreditLimit(user))
             {

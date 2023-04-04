@@ -4,14 +4,24 @@
     {
         private const int MinimalCreditLimit = 500;
 
-        public void ApplyCreditLimit(User user, IClient client)
+        public void ApplyCreditLimit(User user)
         {
-            if (client.Name == "VeryImportantClient")
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user.Client == null)
+            {
+                throw new ArgumentException("User's client information is not set.", nameof(user));
+            }
+
+            if (user.Client.Name == "VeryImportantClient")
             {
                 // Skip credit check
                 user.HasCreditLimit = false;
             }
-            else if (client.Name == "ImportantClient")
+            else if (user.Client.Name == "ImportantClient")
             {
                 // Do credit check and double credit limit
                 user.HasCreditLimit = true;

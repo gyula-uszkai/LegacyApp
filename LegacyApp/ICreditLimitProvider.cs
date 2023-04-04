@@ -2,7 +2,7 @@
 {
     public interface ICreditLimitProvider
     {
-        void ApplyCreditLimit(User user, IClient client);
+        void ApplyCreditLimit(User user);
 
         bool ValidateCreditLimit(User user);
     }
