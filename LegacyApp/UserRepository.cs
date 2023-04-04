@@ -4,9 +4,9 @@ using System.Data.SqlClient;
 
 namespace LegacyApp
 {
-    public static class UserDataAccess
+    public class UserRepository : IUserRepository
     {
-        public static void AddUser(User user)
+        public void AddUser(User user)
         {
             var connectionString = ConfigurationManager.ConnectionStrings["appDatabase"].ConnectionString;
             using (var connection = new SqlConnection(connectionString))

@@ -5,12 +5,15 @@ namespace LegacyApp
     public class UserService
     {
         private readonly IClientRepository clientRepository;
-        public UserService() : this(new ClientRepository())
+        private readonly IUserRepository userRepository;
+
+        public UserService() : this(new ClientRepository(), new UserRepository())
         { }
 
-        public UserService(IClientRepository clientRepository)
+        public UserService(IClientRepository clientRepository, IUserRepository userRepository)
         {
             this.clientRepository = clientRepository;
+            this.userRepository = userRepository;
         }
 
         public bool AddUser(string firname, string surname, string email, DateTime dateOfBirth, int clientld)
@@ -73,7 +76,7 @@ namespace LegacyApp
                 return false;
             }
 
-            UserDataAccess.AddUser(user);
+            this.userRepository.AddUser(user);
 
             return true;
         }
