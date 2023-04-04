@@ -5,7 +5,7 @@ namespace LegacyApp.Tests
 {
     public class UserValidatorTests
     {
-        private readonly IUserValidator _userValidator;
+        private readonly IUserValidator sut;
 
         public UserValidatorTests()
         {
@@ -16,7 +16,7 @@ namespace LegacyApp.Tests
             dateTimeServiceMock.Setup(m => m.Now).Returns(new DateTime(2023, 4, 4));
 
             // Instantiate the UserValidator class with the mock object
-            _userValidator = new UserValidator(dateTimeServiceMock.Object);
+            sut = new UserValidator(dateTimeServiceMock.Object);
         }
 
         [Fact]
@@ -26,7 +26,7 @@ namespace LegacyApp.Tests
             User user = null;
 
             // Act
-            bool result = _userValidator.ValidateUser(user);
+            bool result = sut.ValidateUser(user);
 
             // Assert
             Assert.False(result);
@@ -45,7 +45,7 @@ namespace LegacyApp.Tests
             };
 
             // Act
-            bool result = _userValidator.ValidateUser(user);
+            bool result = sut.ValidateUser(user);
 
             // Assert
             Assert.False(result);
@@ -64,7 +64,7 @@ namespace LegacyApp.Tests
             };
 
             // Act
-            bool result = _userValidator.ValidateUser(user);
+            bool result = sut.ValidateUser(user);
 
             // Assert
             Assert.False(result);
@@ -83,7 +83,7 @@ namespace LegacyApp.Tests
             };
 
             // Act
-            bool result = _userValidator.ValidateUser(user);
+            bool result = sut.ValidateUser(user);
 
             // Assert
             Assert.False(result);
@@ -102,7 +102,7 @@ namespace LegacyApp.Tests
             };
 
             // Act
-            bool result = _userValidator.ValidateUser(user);
+            bool result = sut.ValidateUser(user);
 
             // Assert
             Assert.True(result);
