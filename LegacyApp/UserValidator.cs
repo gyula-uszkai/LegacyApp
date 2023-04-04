@@ -1,22 +1,34 @@
-﻿namespace LegacyApp
+﻿using System.Text.RegularExpressions;
+
+namespace LegacyApp
 {
     public class UserValidator : IUserValidator
     {
+        private const int AgeLimit = 21;
+
         public bool ValidateUser(User user)
         {
+            if (user == null || string.IsNullOrWhiteSpace(user.Firstname) || string.IsNullOrWhiteSpace(user.Surname) || string.IsNullOrWhiteSpace(user.EmailAddress))
+            {
+                return false;
+            }
 
-            if (string.IsNullOrEmpty(user.Firstname) || string.IsNullOrEmpty(user.Surname))
+            // TODO have a better way of validating email patterns...ex regex? see https://learn.microsoft.com/en-us/dotnet/standard/base-types/how-to-verify-that-strings-are-in-valid-email-format
+            if (!Regex.IsMatch(user.EmailAddress,
+                    @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+                    RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250)))
             {
                 return false;
             }
-            if (!user.EmailAddress.Contains("@") && !user.EmailAddress.Contains("."))
-            {
-                return false;
-            }
+
             var now = DateTime.Now;
             int age = now.Year - user.DateOfBirth.Year;
-            if (now.Month < user.DateOfBirth.Month || (now.Month == user.DateOfBirth.Month && now.Day < user.DateOfBirth.Day)) age--;
-            if (age < 21)
+            if (now.Month < user.DateOfBirth.Month || (now.Month == user.DateOfBirth.Month && now.Day < user.DateOfBirth.Day))
+            {
+                age--;
+            }
+
+            if (age < AgeLimit)
             {
                 return false;
             }
