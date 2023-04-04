@@ -9,7 +9,10 @@ namespace LegacyApp
         private readonly IUserValidator userValidator;
         private readonly ICreditLimitProvider creditLimitProvider;
 
-        public UserService() : this(new ClientRepository(), new UserRepository(), new UserValidator(new DateTimeService()), new CreditLimitProvider())
+        public UserService() : this(new ClientRepository(),
+                                    new UserRepository(),
+                                    new UserValidator(new DateTimeService()),
+                                    new CreditLimitProvider(new ClientCreditServiceFactory()))
         { }
 
         public UserService(IClientRepository clientRepository, IUserRepository userRepository, IUserValidator userValidator, ICreditLimitProvider creditLimitProvider)

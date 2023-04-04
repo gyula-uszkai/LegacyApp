@@ -4,6 +4,13 @@
     {
         private const int MinimalCreditLimit = 500;
 
+        private readonly IDictionary<string, IClientCreditService> clientCreditServices;
+
+        public CreditLimitProvider(IClientCreditServiceFactory clientCreditServiceFactory)
+        {
+            this.clientCreditServices = clientCreditServiceFactory.GetClientCreditServices();
+        }
+
         public void ApplyCreditLimit(User user)
         {
             if (user == null)
@@ -16,31 +23,15 @@
                 throw new ArgumentException("User's client information is not set.", nameof(user));
             }
 
-            if (user.Client.Name == "VeryImportantClient")
+            if (!this.clientCreditServices.TryGetValue(user.Client.Name, out var clientCreditService))
             {
-                // Skip credit check
-                user.HasCreditLimit = false;
+                throw new Exception($"Unsupported client: {user.Client.Name}");
             }
-            else if (user.Client.Name == "ImportantClient")
+
+            user.HasCreditLimit = clientCreditService.HasCreditLimit;
+            if (user.HasCreditLimit)
             {
-                // Do credit check and double credit limit
-                user.HasCreditLimit = true;
-                using (var userCreditService = new UserCreditServiceClient())
-                {
-                    var creditLimit = userCreditService.GetCreditLimit(user.Firstname, user.Surname, user.DateOfBirth);
-                    creditLimit = creditLimit * 2;
-                    user.CreditLimit = creditLimit;
-                }
-            }
-            else
-            {
-                // Do credit check
-                user.HasCreditLimit = true;
-                using (var userCreditService = new UserCreditServiceClient())
-                {
-                    var creditLimit = userCreditService.GetCreditLimit(user.Firstname, user.Surname, user.DateOfBirth);
-                    user.CreditLimit = creditLimit;
-                }
+                user.CreditLimit = clientCreditService.GetCreditLimit(user);
             }
         }
 
@@ -55,3 +46,5 @@
         }
     }
 }
+
+
