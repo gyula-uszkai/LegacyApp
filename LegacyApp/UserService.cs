@@ -4,6 +4,15 @@ namespace LegacyApp
 {
     public class UserService
     {
+        private readonly IClientRepository clientRepository;
+        public UserService() : this(new ClientRepository())
+        { }
+
+        public UserService(IClientRepository clientRepository)
+        {
+            this.clientRepository = clientRepository;
+        }
+
         public bool AddUser(string firname, string surname, string email, DateTime dateOfBirth, int clientld)
         {
             if (string.IsNullOrEmpty(firname) || string.IsNullOrEmpty(surname))
@@ -22,8 +31,7 @@ namespace LegacyApp
                 return false;
             }
 
-            var clientRepository = new ClientRepository();
-            var client = clientRepository.GetById(clientld);
+            var client = this.clientRepository.GetById(clientld);
 
             var user = new User
             {
