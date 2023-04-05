@@ -2,34 +2,15 @@
 {
     public class CreditProvider : ICreditProvider
     {
-        public void CalculateCreditLimit(User user, Client client)
+        public void CalculateCreditLimit(User user, IClientHierarchy hierarchy)
         {
-            if (client.Name == "VeryImportantClient")
+            user.HasCreditLimit = hierarchy.HasCreditLimit;
+            if (user.HasCreditLimit)
             {
-                // Skip credit check
-                user.HasCreditLimit = false;
+                user.CreditLimit = hierarchy.GetCreditLimit(user.Firstname, user.Surname, user.DateOfBirth);
             }
-            else if (client.Name == "ImportantClient")
-            {
-                // Do credit check and double credit limit
-                user.HasCreditLimit = true;
-                using (var userCreditService = new UserCreditServiceClient())
-                {
-                    var creditLimit = userCreditService.GetCreditLimit(user.Firstname, user.Surname, user.DateOfBirth);
-                    creditLimit = creditLimit * 2;
-                    user.CreditLimit = creditLimit;
-                }
-            }
-            else
-            {
-                // Do credit check
-                user.HasCreditLimit = true;
-                using (var userCreditService = new UserCreditServiceClient())
-                {
-                    var creditLimit = userCreditService.GetCreditLimit(user.Firstname, user.Surname, user.DateOfBirth);
-                    user.CreditLimit = creditLimit;
-                }
-            }
+
+
         }
     }
 }

@@ -27,7 +27,7 @@
             var client = GetClient(clientld);
             user.Client = client;
 
-            this.creditProvider.CalculateCreditLimit(user, client);
+            this.creditProvider.CalculateCreditLimit(user, client.ClientHierarchy);
 
             if (user.HasCreditLimit && user.CreditLimit < 500)
             {
@@ -54,6 +54,20 @@
         {
             var clientRepository = new ClientRepository();
             var client = clientRepository.GetById(clientld);
+
+            if (client.Name == "VeryImportantClient")
+            {
+                client.ClientHierarchy = new VeryImportantClient();
+            }
+            else if (client.Name == "ImportantClient")
+            {
+                client.ClientHierarchy = new ImportantClient();
+            }
+            else
+            {
+                client.ClientHierarchy = new StandardClient();
+            }
+
             return client;
         }
     }

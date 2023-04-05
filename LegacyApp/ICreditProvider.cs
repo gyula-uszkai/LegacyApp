@@ -2,6 +2,6 @@
 {
     public interface ICreditProvider
     {
-        void CalculateCreditLimit(User user, Client client);
+        void CalculateCreditLimit(User user, IClientHierarchy hierarchy);
     }
 }
