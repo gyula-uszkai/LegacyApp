@@ -2,17 +2,21 @@
 {
     public class UserService
     {
+        private const string VeryImportantClientDelimitator = "VeryImportantClient";
+        private const string ImportantClientDelimitator = "ImportantClient";
         private readonly IUserValidator userValidator;
         private readonly ICreditProvider creditProvider;
+        private readonly IClientRepository clientRepository;
 
-        public UserService() : this(new UserValidator(), new CreditProvider())
+        public UserService() : this(new UserValidator(), new CreditProvider(), new ClientRepository())
         {
         }
 
-        public UserService(IUserValidator userValidator, ICreditProvider creditProvider)
+        public UserService(IUserValidator userValidator, ICreditProvider creditProvider, IClientRepository clientRepository)
         {
             this.userValidator = userValidator;
             this.creditProvider = creditProvider;
+            this.clientRepository = clientRepository;
         }
 
         public bool AddUser(string firname, string surname, string email, DateTime dateOfBirth, int clientId)
@@ -50,10 +54,9 @@
             };
         }
 
-        private static Client GetClient(int clientId)
+        private Client GetClient(int clientId)
         {
-            var clientRepository = new ClientRepository();
-            var client = clientRepository.GetById(clientId);
+            var client = this.clientRepository.GetById(clientId);
             SetClientHierarchy(client);
 
             return client;
@@ -61,11 +64,11 @@
 
         private static void SetClientHierarchy(Client client)
         {
-            if (client.Name == "VeryImportantClient")
+            if (client.Name == VeryImportantClientDelimitator)
             {
                 client.ClientHierarchy = new VeryImportantClient();
             }
-            else if (client.Name == "ImportantClient")
+            else if (client.Name == ImportantClientDelimitator)
             {
                 client.ClientHierarchy = new ImportantClient();
             }
