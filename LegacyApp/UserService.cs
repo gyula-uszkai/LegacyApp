@@ -15,7 +15,7 @@
             this.creditProvider = creditProvider;
         }
 
-        public bool AddUser(string firname, string surname, string email, DateTime dateOfBirth, int clientld)
+        public bool AddUser(string firname, string surname, string email, DateTime dateOfBirth, int clientId)
         {
             var user = CreateUser(firname, surname, email, dateOfBirth);
 
@@ -24,7 +24,7 @@
                 return false;
             }
 
-            var client = GetClient(clientld);
+            var client = GetClient(clientId);
             user.Client = client;
 
             this.creditProvider.CalculateCreditLimit(user, client.ClientHierarchy);
@@ -39,21 +39,21 @@
             return true;
         }
 
-        private static User CreateUser(string firname, string surname, string email, DateTime dateOfBirth)
+        private static User CreateUser(string firstname, string surname, string email, DateTime dateOfBirth)
         {
             return new User
             {
                 DateOfBirth = dateOfBirth,
                 EmailAddress = email,
-                Firstname = firname,
+                Firstname = firstname,
                 Surname = surname
             };
         }
 
-        private static Client GetClient(int clientld)
+        private static Client GetClient(int clientId)
         {
             var clientRepository = new ClientRepository();
-            var client = clientRepository.GetById(clientld);
+            var client = clientRepository.GetById(clientId);
             SetClientHierarchy(client);
 
             return client;
