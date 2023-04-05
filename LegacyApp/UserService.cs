@@ -4,7 +4,7 @@ namespace LegacyApp
 {
     public class UserService
     {
-        public bool AddUser(string firname, string surname, string email, DateTime dateOfBirth, int clientld)
+        public bool AddUser(string firname, string surname, string email, DateTime dateOfBirth, int clientId)
         {
             if (string.IsNullOrEmpty(firname) || string.IsNullOrEmpty(surname))
             {
@@ -23,7 +23,7 @@ namespace LegacyApp
             }
 
             var clientRepository = new ClientRepository();
-            var client = clientRepository.GetById(clientld);
+            var client = clientRepository.GetById(clientId);
 
             var user = new User
             {
