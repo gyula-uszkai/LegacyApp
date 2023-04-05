@@ -38,7 +38,7 @@
                 return false;
             }
 
-            UserDataAccess.AddUser(user);
+            UserDataAccess.AddUser(user);//Consider extracting or adding wrapper
 
             return true;
         }

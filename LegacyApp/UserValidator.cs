@@ -28,7 +28,7 @@
 
         private static int CalculateAge(User user)
         {
-            var now = DateTime.Now;
+            var now = DateTime.Now; // TODO extract datetime service
             int age = now.Year - user.DateOfBirth.Year;
             bool isBirthDayLaterThisYear = now.Month < user.DateOfBirth.Month ||
                                            (now.Month == user.DateOfBirth.Month && now.Day < user.DateOfBirth.Day);
