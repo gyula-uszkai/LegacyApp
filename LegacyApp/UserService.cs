@@ -29,7 +29,7 @@
 
             this.creditProvider.CalculateCreditLimit(user, client.ClientHierarchy);
 
-            if (user.HasCreditLimit && user.CreditLimit < 500)
+            if (!this.creditProvider.IsUserCreditValid(user))
             {
                 return false;
             }
@@ -54,7 +54,13 @@
         {
             var clientRepository = new ClientRepository();
             var client = clientRepository.GetById(clientld);
+            SetClientHierarchy(client);
 
+            return client;
+        }
+
+        private static void SetClientHierarchy(Client client)
+        {
             if (client.Name == "VeryImportantClient")
             {
                 client.ClientHierarchy = new VeryImportantClient();
@@ -67,8 +73,6 @@
             {
                 client.ClientHierarchy = new StandardClient();
             }
-
-            return client;
         }
     }
 }
