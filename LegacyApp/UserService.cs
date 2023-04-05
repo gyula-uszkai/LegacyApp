@@ -1,29 +1,23 @@
-﻿
-
-namespace LegacyApp
+﻿namespace LegacyApp
 {
     public class UserService
     {
         private readonly IUserValidator userValidator;
+        private readonly ICreditProvider creditProvider;
 
-        public UserService() : this(new UserValidator())
+        public UserService() : this(new UserValidator(), new CreditProvider())
         {
         }
 
-        public UserService(IUserValidator userValidator)
+        public UserService(IUserValidator userValidator, ICreditProvider creditProvider)
         {
             this.userValidator = userValidator;
+            this.creditProvider = creditProvider;
         }
 
         public bool AddUser(string firname, string surname, string email, DateTime dateOfBirth, int clientld)
         {
-            var user = new User
-            {
-                DateOfBirth = dateOfBirth,
-                EmailAddress = email,
-                Firstname = firname,
-                Surname = surname
-            };
+            var user = CreateUser(firname, surname, email, dateOfBirth);
 
             if (!userValidator.IsUserValid(user))
             {
@@ -33,33 +27,8 @@ namespace LegacyApp
             var client = GetClient(clientld);
             user.Client = client;
 
+            this.creditProvider.CalculateCreditLimit(user, client);
 
-            if (client.Name == "VeryImportantClient")
-            {
-                // Skip credit check
-                user.HasCreditLimit = false;
-            }
-            else if (client.Name == "ImportantClient")
-            {
-                // Do credit check and double credit limit
-                user.HasCreditLimit = true;
-                using (var userCreditService = new UserCreditServiceClient())
-                {
-                    var creditLimit = userCreditService.GetCreditLimit(user.Firstname, user.Surname, user.DateOfBirth);
-                    creditLimit = creditLimit * 2;
-                    user.CreditLimit = creditLimit;
-                }
-            }
-            else
-            {
-                // Do credit check
-                user.HasCreditLimit = true;
-                using (var userCreditService = new UserCreditServiceClient())
-                {
-                    var creditLimit = userCreditService.GetCreditLimit(user.Firstname, user.Surname, user.DateOfBirth);
-                    user.CreditLimit = creditLimit;
-                }
-            }
             if (user.HasCreditLimit && user.CreditLimit < 500)
             {
                 return false;
@@ -68,6 +37,17 @@ namespace LegacyApp
             UserDataAccess.AddUser(user);
 
             return true;
+        }
+
+        private static User CreateUser(string firname, string surname, string email, DateTime dateOfBirth)
+        {
+            return new User
+            {
+                DateOfBirth = dateOfBirth,
+                EmailAddress = email,
+                Firstname = firname,
+                Surname = surname
+            };
         }
 
         private static Client GetClient(int clientld)
